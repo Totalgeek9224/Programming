@@ -23,41 +23,25 @@ userInitials = []
 # Funtion to collect user Initials, preventing numbers, while also confirming user intitals before proceeding.
 # Additionally, 
 def collectInitials ():
-    # Quit sequence to allow quit from any stage of the program
-    userPanic = False
-    if  == ["quit", "Quit", "QUIT"]:
-        userPanic = True
 
-    while userPanic == False:
+    # Ask user for Initials
+    userInitials = input('Enter your 3 initials: ')
+    if userInitials == ("quit" or "Quit"):
+        quit()
 
-        (correctInnitials) = False
+    # Confirm only letters
+    while (userInitials.isalpha() == False) or not (len(userInitials) == 3):
+        print('Incorrect Formatting- Please try again')
+        userInitials = input('Enter your 3 initials: ')
+        if userInitials == ("quit" or "Quit"):
+            quit()
 
-        while correctInnitials == False:
+    print ("Your initials are:" + userInitials.upper())
 
-            # Ask user for Initials
-            userInitials = input('Enter your initials: ')
-
-            #Confirm only letters
-            while (userInitials.isalpha() == False):
-                print('Letters only, please')
-                userInitials = input('Enter your initials: ')
-
-            # Confirm user initials, ending the collectInitials Function
-            print (userInitials.upper())
-            userConfirm = input ('Are these correct? Y/N ')
-
-            while (userConfirm not in ["Y","N", "y", "n"]):
-                print ('Input not recognised - try again')
-                userConfirm = input ('Are these correct? Y/N ')
-
-            if (userConfirm == 'Y' or userConfirm == 'y'):
-                correctInnitials = True
-
-
+    
 #################
 ### Main Code ###
 #################
 
 collectInitials ()
-print(userInitials)
 
