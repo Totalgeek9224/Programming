@@ -5,27 +5,36 @@ import random
 ##############################################################
 userInitials = []
 gameBoard = [ [ "E", "E", "E" ], [ "E", "E", "E" ],[ "E", "E", "E" ] ]
-firstMove = []
 #####################################################
 ##################### Functions #####################
 #####################################################
 
-# Function to collect user 3 Initials, preventing numbers, and presenting them capitalised. Also recognises "quit" input, forcing the program to quit
+# Function to collect user 3 Initials, preventing numbers, and presenting them capitalised. Also recognises "quit" input, forcing the program to quit()
 def collectInitials ():
-
+    global userInitials
     # Ask user for Initials
     userInitials = input('Enter your 3 initials: ').upper()
-    if userInitials == ("quit" or "Quit"):
-        quit()
+    
+    while (userInitials.isalpha() == False) or (userInitials == ("QUIT")) or (len(userInitials) != 3):
+        # Implementation of Quit function to allow for quitting throughout process
+        if userInitials == ("QUIT"):
+            print ("Quitting Program")
+            quit ()
+        # Using .isalpha command to filter letters only, if not only letters, error is thrown
+        elif userInitials.isalpha() == False:
+            print ("Please enter letters only (numbers & special characters invalid) ")
+            userInitials = input('Enter your 3 initials: ').upper()
+        # Ensuring userInitials are only 3 characters long, if the length of userInitials is not equal to 3, an error is thrown
+        elif (len(userInitials) != 3):
+            print("Please enter 3 initials ONLY ")
+            userInitials = input('Enter your 3 initials: ').upper()
+        # To prevent possible unforseen error, if something entered makes it this far, an error is thrown and the while Loop repeats.
+        else:
+            print('Incorrect Formatting- Please try again')
+            userInitials = input('Enter your 3 initials: ').upper()
 
-    # Confirm only letters
-    while (userInitials.isalpha() == False) or not (len(userInitials) == 3):
-        print('Incorrect Formatting- Please try again')
-        userInitials = input('Enter your 3 initials: ').upper()
-        if userInitials == ("quit" or "Quit"):
-            quit()
-
-    print ("Your initials are:" + userInitials)
+    # Print out confirmation of userInitials
+    print ("Your initials are: " + userInitials)
 
 def drawBoard ():
     print ("  A B C")
@@ -35,6 +44,7 @@ def drawBoard ():
 
 
 def gameStart ():
+
     firstPlay = random.choice(["Player", "Computer"])
     print("The first move goes to: " + firstPlay )
 
@@ -48,7 +58,7 @@ def gameStart ():
 #####################################################
 ##################### Main Code #####################
 #####################################################
-print('''\  
+print('''  
   _______ __      ______              ______         
  /_  __(_) /__   /_  __/___ ______   /_  __/___  ___ 
   / / / / //_/    / / / __ `/ ___/    / / / __ \/ _ \\
