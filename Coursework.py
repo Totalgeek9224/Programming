@@ -20,41 +20,68 @@ def collectInitials ():
         if userInitials == ("QUIT"):
             print ("Quitting Program")
             quit ()
-        # Using .isalpha command to filter letters only, if not only letters, error is thrown
+        # Using .isalpha command to filter letters only, if not only letters, error is printed
         elif userInitials.isalpha() == False:
             print ("Please enter letters only (numbers & special characters invalid) ")
             userInitials = input('Enter your 3 initials: ').upper()
-        # Ensuring userInitials are only 3 characters long, if the length of userInitials is not equal to 3, an error is thrown
+        # Ensuring userInitials are only 3 characters long, if the length of userInitials is not equal to 3, an error is printed
         elif (len(userInitials) != 3):
             print("Please enter 3 initials ONLY ")
             userInitials = input('Enter your 3 initials: ').upper()
-        # To prevent possible unforseen error, if something entered makes it this far, an error is thrown and the while Loop repeats.
+        # To prevent possible unforseen error, if something entered makes it this far, an error is printed and the while Loop repeats.
         else:
             print('Incorrect Formatting- Please try again')
             userInitials = input('Enter your 3 initials: ').upper()
 
     # Print out confirmation of userInitials
     print ("Your initials are: " + userInitials)
+#
+def gameBoardSort ():
+    global gameBoard
+    gameBoard = [ [ "E", "E", "E" ], [ "E", "E", "E" ],[ "E", "E", "E" ] ]
+    for x in gameBoard:
+        gameBoard[0] = ["_", "_", "_"]
+        gameBoard[1] = ["_", "_", "_"]
+        gameBoard[2] = [" ", " ", " "]
 
 def drawBoard ():
     print ("  A B C")
-    print ("1 " + gameBoard[1] + "|" + gameBoard[2] + "|" + gameBoard[3])
-    print ("2 _|_|_")
-    print ("3 _|_|_")
-
+    print ("1", end =" ")
+    print(*gameBoard[0], sep = "|")
+    print ("2", end =" ")
+    print(*gameBoard[1], sep = "|")
+    print ("3", end =" ")
+    print(*gameBoard[2], sep = "|")  
 
 def gameStart ():
+
+    global playerTurn
+    global playerSymbol
+
+    gameBoardSort ()
 
     firstPlay = random.choice(["Player", "Computer"])
     print("The first move goes to: " + firstPlay )
 
     if firstPlay == "Player":
         print ("You are O's ")
-        firstMove = input ("Where would you like your first move?: ")
+        playerSymbol = ("\033[4mO\033[0m")
+        playerTurn = True
 
     else:
         print ("You are X's, your move is next.")
+        playerSymbol = ("\033[4mX\033[0m")
+        playerTurn = False
+#
+def playerTurnAction (playerChoice):
+    global nextMoveLetter
+    global nextMoveNumber
 
+    while playerTurn == True:
+        print ("Where would you like to place your piece? ")
+        nextMoveLetter = input ("Letter: ")
+        nextMoveNumber = input ("Number: ")
+        gameBoard[nextMoveNumber-1] = (playerSymbol)
 #####################################################
 ##################### Main Code #####################
 #####################################################
@@ -71,4 +98,5 @@ print('''
 
 collectInitials ()
 gameStart ()
-#drawBoard ()
+drawBoard ()
+playerTurn ()
