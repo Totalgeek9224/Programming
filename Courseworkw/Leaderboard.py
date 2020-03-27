@@ -13,6 +13,8 @@ moveCount = 0
 #####################################################
 
 def gameTitle ():
+    global gameBoard
+    
     print("  _______ __      ______              ______                ")
     print(" /_  __(_) /__   /_  __/___ ______   /_  __/___  ___        ")
     print("  / / / / //_/    / / / __ `/ ___/    / / / __ \/ _ \\      ")
@@ -20,7 +22,8 @@ def gameTitle ():
     print("/_/ /_/_/|_|    /_/  \\__,_/\___/    /_/  \\____/\\___/     ")
     print("                                                            ")
     print("                  By Zachary DeMarco                        ")
-
+    
+    gameBoard = [ [ "E", "E", "E" ], [ "E", "E", "E" ],[ "E", "E", "E" ] ]
 # Function to collect user 3 Initials, preventing numbers, and presenting them capitalised. Also recognises "quit" input, forcing the program to quit()
 def collectInitials ():
     global userInitials
@@ -48,40 +51,42 @@ def collectInitials ():
     # Print out confirmation of userInitials
     print ("Your initials are: " + userInitials)
 
-# Function to redefine gameBoard values in order to make it formatted for TicTacToe grid
-#(Intermediate function)
-def gameBoardSort ():
-    global gameBoard
-    #Reassigning gameBoard values to represent ideal blank grid
-    gameBoard = [ [ "E", "E", "E" ], [ "E", "E", "E" ],[ "E", "E", "E" ] ]
-    for x in gameBoard:
-        gameBoard[0] = ["_", "_", "_"]
-        gameBoard[1] = ["_", "_", "_"]
-        gameBoard[2] = [" ", " ", " "]
 
 # Prints the gameboard with appropriate formatting
 #(Intermediate function)
 def drawBoard ():
     print ("  A B C")
-    print ("1", end =" ")
-    print(*gameBoard[0], sep = "|")
-    print ("2", end =" ")
-    print(*gameBoard[1], sep = "|")
-    print ("3", end =" ")
-    print(*gameBoard[2], sep = "|")  
-    time.sleep(0.5)
+    for rowNo, row in enumerate(gameBoard):
+        print (str(rowNo +1), end = " ")
+        
+        for colNo, col in enumerate (row):
+            if rowNo < 2:
+                if col == "E":
+                    print ("_", end="")
+                elif col == "X":
+                    print ("\033[4mX\033[0m", end="")
+                else:
+                    print ("\033[4mO\033[0m",end="")
+            else:
+                if col == "E":
+                    print (" ", end="")
+                elif col == "X":
+                    print ("X", end="")
+                else:
+                    print ("O", end="")
+            if colNo < 2:
+                print ("|", end="")
+
+        time.sleep(0.1)
+        print ()
 
 # Function that Starts the game. First sorts the gameBoard, then randomly selects a player to begin, and based off of the first player, the user is designagted a symbol.
 def gameStart ():
 
     global playerTurn
     global playersymbol
-    global playersymbolPlain
     global computersymbol
-    global computersymbolPlain
 
-    #activates the sort funtion in order to redifine the list values into plain TicTakToe formatting
-    gameBoardSort ()
     #introducing the playerTurn Variable
     playerTurn = False
 
@@ -92,18 +97,14 @@ def gameStart ():
     #Assigning roles based off of first player. 
     if firstPlay == "Player":
         print ("You are O's ")
-        playersymbol= ("\033[4mO\033[0m")
-        playersymbolPlain = "O"
-        computersymbol= ("\033[4mX\033[0m")
-        computersymbolPlain = "X"
+        playersymbol= ("O")
+        computersymbol= "X"
         playerTurn = True
 
     else:
         print ("You are X's, your move is next.")
-        playersymbol= ("\033[4mX\033[0m")
-        playersymbolPlain = "X"
-        computersymbol= ("\033[4mO\033[0m")
-        computersymbolPlain = "O"
+        playersymbol= "X"
+        computersymbol= "O"
         playerTurn = False
     
     drawBoard ()
@@ -164,28 +165,23 @@ def playerTurnAction ():
     nextMoveLetterNumber= ord(nextMoveLetter)-96
 
     # Checking to see if the randomly selected coordinates are already taken, if they are, it randomly generates new coordinates
-    while not gameBoard[int(nextMoveNumber)-1][int(nextMoveLetterNumber)-1] in [(" "),("_")]:
+    while not gameBoard[int(nextMoveNumber)-1][int(nextMoveLetterNumber)-1] in ["E"]:
         print ("That spot is already occupied, chose another move: ")
         # Collecting the desired Letter, and checking to make sure its valid
         nextMoveLetter = input ("New Letter: ")
         nextMoveLetter = inputProof (nextMoveLetter,"Letter: ",False,"Please enter letters only (numbers & special characters invalid) ",1,"Please enter a singular letter: ", ["A","B","C"])
-
+        return nextMoveLetter
         # Collecting the desired number, and checking to make sure it is valid
         nextMoveNumber = input ("New Number: ")
         nextMoveNumber = inputProof (nextMoveNumber,"Number: ",True,"Please enter numbers only (letters & special characters invalid) ",1,"Please enter a singular number: ", ["1","2","3"])
+        return nextMoveNumber
     
-    
-    #If statement to differ between needing playersymbolwith an underline or without an underline based on position in grid.
-    if int(nextMoveNumber) < 3:
-        gameBoard[int(nextMoveNumber)-1][int(nextMoveLetterNumber)-1] = playersymbol
-        playerTurn = False
-
-    else: 
-        gameBoard[int(nextMoveNumber)-1][int(nextMoveLetterNumber)-1] = playersymbolPlain
-        playerTurn = False
+   
+    gameBoard[int(nextMoveNumber)-1][int(nextMoveLetterNumber)-1] = playersymbol
+    playerTurn = False
 
     print ("Your move is:")
-    drawBoard ()
+    drawBoard()
 
 # When it's the computer's turn, this function randomly choses a position on the board, then checks to see if it's valid. If it is, it plays the move, otherwise, it randomly generates until it gets a valid move
 def computerTurnAction ():
@@ -200,54 +196,51 @@ def computerTurnAction ():
         computerNumber = random.choice([0,1,2])
 
         # Checking to see if the randomly selected coordinates are already taken, if they are, it randomly generates new coordinates
-        while not gameBoard[computerNumber][computerLetter] in [(" "),("_")]:
+        while not gameBoard[computerNumber][computerLetter] in ["E"]:
             computerLetter = random.choice([0,1,2])
             computerNumber = random.choice([0,1,2])
 
-        # if the position is valid, the right character to input (with or without underscore) is chosen based on position. 
-        if computerNumber <2:
-            gameBoard [computerNumber][computerLetter] = computersymbol
-            playerTurn = True
-        else:
-            gameBoard [computerNumber][computerLetter] = computersymbolPlain
-            playerTurn = True
+       
+        gameBoard [computerNumber][computerLetter] = computersymbol
+        playerTurn = True
 
     print ("The Computer's Move is: ")
     drawBoard ()
 
 #
-def gameWin (symbol,symb):
+def gameWin (symbol):
 
     return((gameBoard[0][0] == (symbol) and gameBoard[0][1] == (symbol) and gameBoard[0][2] == (symbol)) or #top across
     (gameBoard[1][0]== (symbol) and gameBoard[1][1] == (symbol) and gameBoard[1][2]== (symbol)) or #mid across
-    (gameBoard[2][0]== (symb) and gameBoard[2][1] == (symb) and gameBoard[2][2]== (symb)) or # bottom across
-    (gameBoard[0][0] == (symbol) and gameBoard [1][0] == (symbol) and gameBoard [2][0]== (symb)) or #left down
-    (gameBoard[0][1] == (symbol) and gameBoard [1][1] == (symbol) and gameBoard [2][1]== (symb)) or #mid down
-    (gameBoard[0][2] == (symbol) and gameBoard [1][2] == (symbol) and gameBoard [2][2]== (symb)) or #right down
-    (gameBoard[0][0] == (symbol) and gameBoard[1][1] == (symbol) and gameBoard[2][2]== (symb)) or #diag top left to bottom right
-    (gameBoard[0][2] == (symb) and gameBoard[1][1] == (symbol) and gameBoard [2][0]== (symbol)))  #diag bottom left to top right      
+    (gameBoard[2][0]== (symbol) and gameBoard[2][1] == (symbol) and gameBoard[2][2]== (symbol)) or # bottom across
+    (gameBoard[0][0] == (symbol) and gameBoard [1][0] == (symbol) and gameBoard [2][0]== (symbol)) or #left down
+    (gameBoard[0][1] == (symbol) and gameBoard [1][1] == (symbol) and gameBoard [2][1]== (symbol)) or #mid down
+    (gameBoard[0][2] == (symbol) and gameBoard [1][2] == (symbol) and gameBoard [2][2]== (symbol)) or #right down
+    (gameBoard[0][0] == (symbol) and gameBoard[1][1] == (symbol) and gameBoard[2][2]== (symbol)) or #diag top left to bottom right
+    (gameBoard[0][2] == (symbol) and gameBoard[1][1] == (symbol) and gameBoard [2][0]== (symbol)))  #diag bottom left to top right      
 
 def gamePlay ():
     global moveCount
     global gameStatus
     global tieStatus
 
+    tieStatus = False
+
     moveCount = 0
     gameStatus = True
-    tieStatus = False
 
     while gameStatus == True:
         if moveCount < 9:
             if playerTurn == True:
                 playerTurnAction ()
                 moveCount = moveCount + 1
-                if gameWin (playersymbol,playersymbolPlain):
+                if gameWin (playersymbol):
                     gameStatus = False
                 time.sleep(0.5)
             elif playerTurn == False:
                 computerTurnAction ()
                 moveCount = moveCount + 1
-                if gameWin (computersymbol,computersymbolPlain):
+                if gameWin (computersymbol):
                     gameStatus = False
                 time.sleep(0.5)
         elif moveCount == 9:
