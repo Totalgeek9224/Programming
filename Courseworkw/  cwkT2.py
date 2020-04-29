@@ -1,6 +1,7 @@
 
 import random
 import time
+
 ##############################################################
 ##################### Declare Statements #####################
 ##############################################################
@@ -8,13 +9,20 @@ userInitials = []
 gameBoard = [ [ "E", "E", "E" ], [ "E", "E", "E" ],[ "E", "E", "E" ] ]
 gameStatus = True
 moveCount = 0
+gameCount = 0
+winStatus = False 
+winCount = 0
+drawCount = 0 
+
 #####################################################
 ##################### Functions #####################
 #####################################################
 
 def gameTitle ():
     global gameBoard
+    global gameCount
     
+
     print("  _______ __      ______              ______                ")
     print(" /_  __(_) /__   /_  __/___ ______   /_  __/___  ___        ")
     print("  / / / / //_/    / / / __ `/ ___/    / / / __ \/ _ \\      ")
@@ -24,6 +32,69 @@ def gameTitle ():
     print("                  By Zachary DeMarco                        ")
     
     gameBoard = [ [ "E", "E", "E" ], [ "E", "E", "E" ],[ "E", "E", "E" ] ]
+
+    readLeaderBoard ()
+    
+    
+#leaderboard Function- NOT IMPLEMENTED
+def readLeaderBoard ():
+    global leaderBoard
+    try:
+        with open("leaderBoard.dat", "r") as f:      #open the leaderboard file. 
+            leaderBoard = f.readline().strip()       #copy the info from the file to a local varib
+           
+            #for every item in the varib, split at each new line character
+            while leaderBoard:                     
+                players= leaderBoard.split("\n")
+                try:                                 #format the varib with the desired paramaters
+                    leaderBoard.append([str(userInitals[0]), int(winCount[1]), int(lossCount[3]), int(gameCount[0])])
+                except Exception:                     #in the case an error is raised
+                    print ("leaderBoard.dat is corrupted")
+                    quit ()
+                else:                                 
+                    leaderBoard = f.readline().split()    
+    
+    except FileNotFoundError:                           #if the file doesnt exist, the program creates one
+        
+        try:
+            with open("leaderBoard.dat", "w+") as f:
+                leaderBoard = []                        #initalises the blank file
+
+        except Exception:
+            print ("Failed to create leaderBoard.dat")              #in the case of an exception, and error is thrown for debug
+    
+    #except Exception:
+        #print (" Failed to access leaderBoard.dat")                #in the case of another exeption, an erros is thrown for debug              
+    
+#leaderboard Function- NOT IMPLEMENTED
+def displayLeaderBoard ():
+    with open("leaderBoard.dat", "r") as f: #opening the file
+        print ("\033[4mPlayer\033[0m" " " "\033[4mWins\033[0m" " " "\033[4mDraws\033[0m" " " "\033[4mLosses\033[0m" " " "\033[4mTotal Games Played\033[0m")     #displaying the formatted table
+        for leaderBoard in f:
+            print (leaderBoard)                 #printing the leaderboard
+
+#leaderboard Function- NOT IMPLEMENTED  
+def writeLeaderBoard ():
+    global userInitals
+
+    with open ("leaderBoard.dat", "r+") as l:
+        try:
+            players = [playerInitials.upper(), winCount, drawCount, lossCount, gameCount] 
+            for player in players:
+                l.write(str(player() + "    "))
+
+        except Exception:                   #in the case of an issue, and error is thrown for debug
+            print ("Unable to sucesssfully write to leaderBoard.dat")
+
+    #if userInitals in leaderBoard:
+        #try:
+            #with open ("leaderBoard.dat", "r+") as l:
+                #players = [playerInitials.upper(), winCount, drawCount, lossCount, gameCount]
+                #for player in players:
+                    #leaderBoard.write(str(player) + "   ")
+        #except:
+            #pass
+
 # Function to collect user 3 Initials, preventing numbers, and presenting them capitalised. Also recognises "quit" input, forcing the program to quit()
 def collectInitials ():
     global userInitials
@@ -207,7 +278,7 @@ def computerTurnAction ():
     print ("The Computer's Move is: ")
     drawBoard ()
 
-#
+# Function to check for game win. Check in all axis.
 def gameWin (symbol):
 
     return((gameBoard[0][0] == (symbol) and gameBoard[0][1] == (symbol) and gameBoard[0][2] == (symbol)) or #top across
@@ -219,6 +290,7 @@ def gameWin (symbol):
     (gameBoard[0][0] == (symbol) and gameBoard[1][1] == (symbol) and gameBoard[2][2]== (symbol)) or #diag top left to bottom right
     (gameBoard[0][2] == (symbol) and gameBoard[1][1] == (symbol) and gameBoard [2][0]== (symbol)))  #diag bottom left to top right      
 
+#Function to play the game. Alternates turns, counts moves, and checks for wins.
 def gamePlay ():
     global moveCount
     global gameStatus
@@ -226,53 +298,65 @@ def gamePlay ():
 
     tieStatus = False
 
+    #set gameStatus to True and Move Count to 0 to ensure count and status is correct in the case of a second game.
     moveCount = 0
     gameStatus = True
 
     while gameStatus == True:
-        if moveCount < 9:
+        if moveCount < 9:                      #Checking for a tie by counting the amount of moves. If not a tie then  game contiues as normal
             if playerTurn == True:
-                playerTurnAction ()
-                moveCount = moveCount + 1
-                if gameWin (playersymbol):
-                    gameStatus = False
-                time.sleep(0.5)
+                playerTurnAction ()             
+                moveCount = moveCount + 1       #Adds a move to the move Count
+                if gameWin (playersymbol):       #Checks for win, ensuring the game stops if a win is detected.
+                    gameStatus = False           # In the case of a win, the game funtion would be stopped, and the win game over funtion would be called
+                time.sleep(0.5)                   #Adding a delay to keep the interface more friendly. 
             elif playerTurn == False:
                 computerTurnAction ()
                 moveCount = moveCount + 1
                 if gameWin (computersymbol):
                     gameStatus = False
                 time.sleep(0.5)
-        elif moveCount == 9:
-            gameStatus = False
-            tieStatus = True
+        elif moveCount == 9:                    #Detects if game is a tie.
+            gameStatus = False                  #Ends game
+            tieStatus = True                   
         
-
+# Fuction when when a game win, loss, ot tie is detected. Presents Winner, amount of moves taken, and prompts a restart que.
 def gameOver ():
     global restartValue
     global tieStatus
 
-    if tieStatus == True:
+
+    if tieStatus == True:                                           #checking if game is a tie. If it isnt, checking for who won.
         print ("Game Over - Tie!")
+        drawCount + 1
+        writeLeaderBoard ()
+        displayLeaderBoard()
         restartValue = input ("Would you like to play again? (Y/N): ")
         
-    else:
+    else:                                                               #Presents the user with the winner, the amount of moves taken and a prompt to continue.
         if playerTurn == False:
-            print ("The Player has won in " + str(moveCount) + " moves!")
-            restartValue = input ("Would you like to play again? (Y/N): ")
+            print ("The Player has won in " + str(moveCount) + " moves!")        # Prints the winner, and the amount of moves taken to win.   
+            winCount + 1
+            writeLeaderBoard ()
+            displayLeaderBoard()
+            restartValue = input ("Would you like to play again? (Y/N): ")      #Prompt to restart the Game. 
+            
         else:
             print ('The computer has won in ' + str(moveCount) + ' moves! Better luck next time!')
+            writeLeaderBoard ()
+            displayLeaderBoard ()
             restartValue = input ("Would you like to play again? (Y/N): ")
+
 
 #####################################################
 ##################### Main Code #####################
 #####################################################
-restartValue = "Y"
-while restartValue.upper() == "Y": 
+restartValue = "Y"                              #Sets varib to "Y", which is used as the condition to play the game, which allows for easy restart/ game end.
+while restartValue.upper() == "Y":              #While loop to keep the game going as long as varib is known, if vaib changes, the game ends.
     gameTitle ()
     collectInitials ()
     gameStart ()
     gamePlay ()
     gameOver ()
 
-print ("Thanks for playing " + userInitials + "!")
+print ("Thanks for playing " + userInitials + "!")              #printing a little goodbye message if user opts to not play again. 

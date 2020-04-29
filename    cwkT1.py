@@ -24,6 +24,7 @@ def gameTitle ():
     print("                  By Zachary DeMarco                        ")
     
     gameBoard = [ [ "E", "E", "E" ], [ "E", "E", "E" ],[ "E", "E", "E" ] ]
+
 # Function to collect user 3 Initials, preventing numbers, and presenting them capitalised. Also recognises "quit" input, forcing the program to quit()
 def collectInitials ():
     global userInitials
@@ -207,7 +208,7 @@ def computerTurnAction ():
     print ("The Computer's Move is: ")
     drawBoard ()
 
-#
+# Function to check for game win. Check in all axis.
 def gameWin (symbol):
 
     return((gameBoard[0][0] == (symbol) and gameBoard[0][1] == (symbol) and gameBoard[0][2] == (symbol)) or #top across
@@ -219,6 +220,7 @@ def gameWin (symbol):
     (gameBoard[0][0] == (symbol) and gameBoard[1][1] == (symbol) and gameBoard[2][2]== (symbol)) or #diag top left to bottom right
     (gameBoard[0][2] == (symbol) and gameBoard[1][1] == (symbol) and gameBoard [2][0]== (symbol)))  #diag bottom left to top right      
 
+#Function to play the game. Alternates turns, counts moves, and checks for wins.
 def gamePlay ():
     global moveCount
     global gameStatus
@@ -226,40 +228,41 @@ def gamePlay ():
 
     tieStatus = False
 
+    #set gameStatus to True and Move Count to 0 to ensure count and status is correct in the case of a second game.
     moveCount = 0
     gameStatus = True
 
     while gameStatus == True:
-        if moveCount < 9:
+        if moveCount < 9:                      #Checking for a tie by counting the amount of moves. If not a tie then  game contiues as normal
             if playerTurn == True:
-                playerTurnAction ()
-                moveCount = moveCount + 1
-                if gameWin (playersymbol):
-                    gameStatus = False
-                time.sleep(0.5)
+                playerTurnAction ()             
+                moveCount = moveCount + 1       #Adds a move to the move Count
+                if gameWin (playersymbol):       #Checks for win, ensuring the game stops if a win is detected.
+                    gameStatus = False           # In the case of a win, the game funtion would be stopped, and the win game over funtion would be called
+                time.sleep(0.5)                   #Adding a delay to keep the interface more friendly. 
             elif playerTurn == False:
                 computerTurnAction ()
                 moveCount = moveCount + 1
                 if gameWin (computersymbol):
                     gameStatus = False
                 time.sleep(0.5)
-        elif moveCount == 9:
-            gameStatus = False
-            tieStatus = True
+        elif moveCount == 9:                    #Detects if game is a tie.
+            gameStatus = False                  #Ends game
+            tieStatus = True                   
         
-
+# Fuction when when a game win, loss, ot tie is detected. Presents Winner, amount of moves taken, and prompts a restart que.
 def gameOver ():
     global restartValue
     global tieStatus
 
-    if tieStatus == True:
+    if tieStatus == True:                                           #checking if game is a tie. If it isnt, checking for who won.
         print ("Game Over - Tie!")
         restartValue = input ("Would you like to play again? (Y/N): ")
         
-    else:
+    else:                                                               #Presents the user with the winner, the amount of moves taken and a prompt to continue.
         if playerTurn == False:
-            print ("The Player has won in " + str(moveCount) + " moves!")
-            restartValue = input ("Would you like to play again? (Y/N): ")
+            print ("The Player has won in " + str(moveCount) + " moves!")        # Prints the winner, and the amount of moves taken to win.   
+            restartValue = input ("Would you like to play again? (Y/N): ")      #Prompt to restart the Game. 
         else:
             print ('The computer has won in ' + str(moveCount) + ' moves! Better luck next time!')
             restartValue = input ("Would you like to play again? (Y/N): ")
@@ -267,12 +270,12 @@ def gameOver ():
 #####################################################
 ##################### Main Code #####################
 #####################################################
-restartValue = "Y"
-while restartValue.upper() == "Y": 
+restartValue = "Y"                              #Sets varib to "Y", which is used as the condition to play the game, which allows for easy restart/ game end.
+while restartValue.upper() == "Y":              #While loop to keep the game going as long as varib is known, if vaib changes, the game ends.
     gameTitle ()
     collectInitials ()
     gameStart ()
     gamePlay ()
     gameOver ()
 
-print ("Thanks for playing " + userInitials + "!")
+print ("Thanks for playing " + userInitials + "!")              #printing a little goodbye message if user opts to not play again. 
