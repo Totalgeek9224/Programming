@@ -1,0 +1,39 @@
+Carraige Layout:
+
+| Door | 1 | Shared | 5 | 9  | Shared | 13 |   | 17 |  | 21 |  | 25 | 29 | Shared | 33 | Door |
+|      | 2 | Table  | 6 | 10 | Table  | 14 |   | 18 |  | 22 |  | 26 | 30 | Table  | 34 |      |
+|      |   |        |   |    |        |    |   |    |  |    |  |    |    |        |    |      |
+|      |   |________|   |    |________|    |   |    |  |    |  |    |    |        |    |      |
+|      | 3 | Shared | 7 | 11 | Shared | 15 |   | 19 |  | 23 |  | 27 | 31 | Shared | 35 |      |
+| Door | 4 | Table  | 8 | 12 | Table  | 16 |   | 20 |  | 24 |  | 28 | 32 | Table  | 36 | Door |
+
+
+<----------------------------- Forwards Direction
+
+
+Example of reservation.dat
+[(tuple),[List]],
+[(Seat Number,Facing forwards,table Access) ["Full Name", "Phone Number"]]
+[ ( 1, false, 1 ), [ ] ],
+[ ( 2, false, 1 ), [ ] ],
+[ ( 3, false, 2 ), [ ] ],
+[ ( 4, false, 2 ), [ ] ],
+[ ( 5, true, 1 ), [“Joe Bloggs”, “0151 555 5555”] ],
+[ ( 6, true, 1 ), [ ] ]
+
+Checks Reservation.dat exists in the same directory as main.py
+    If not, Outputs error message, then ends.
+    If it does, json.load() is used to load the data to a variable
+
+Repeating menu with  the following items:
+    1.Display Seat Reservations
+    2.Reserve a seat
+    3.Quit
+        If Quit, Prompt to confirm
+        Are you sure (y/n) (accept caps or not)
+        If yes, save reservation File and quit
+
+Refer to doccumentation for specificson 1 & 2
+
+
+
